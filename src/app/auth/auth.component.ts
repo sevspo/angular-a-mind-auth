@@ -9,6 +9,8 @@ import { AuthService } from "./auth.service";
 export class AuthComponent {
   isLoginMode = true;
   isLoading = false;
+  // another example why null: if you had an empty string, that would be the error!
+  error: string = null;
 
   constructor(private authService: AuthService) {}
 
@@ -36,8 +38,9 @@ export class AuthComponent {
           console.log(resData);
           this.isLoading = false;
         },
-        error => {
-          console.log(error);
+        errorMessage => {
+          this.isLoading = false;
+          this.error = errorMessage;
         }
       );
     }
