@@ -1,6 +1,7 @@
 import { Component } from "@angular/core";
 import { Form, NgForm } from "@angular/forms";
-import { AuthService } from "./auth.service";
+import { AuthService, AuthResData } from "./auth.service";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-auth",
@@ -30,20 +31,27 @@ export class AuthComponent {
 
     this.isLoading = true;
 
+    // we refactored this section to be shorter. we subscribe to the login or the sign-
+    // up ovservable after the if statement by signing up to the authObs variable. It will have a
+    // value after the if statement has run.
+    let authObs: Observable<AuthResData>;
+
     if (this.isLoginMode) {
-      // do stuff
+      authObs = this.authService.login(email, password);
     } else {
-      this.authService.signUp(email, password).subscribe(
-        resData => {
-          console.log(resData);
-          this.isLoading = false;
-        },
-        errorMessage => {
-          this.isLoading = false;
-          this.error = errorMessage;
-        }
-      );
+      authObs = this.authService.signUp(email, password);
     }
+
+    authObs.subscribe(
+      resData => {
+        console.log(resData);
+        this.isLoading = false;
+      },
+      errorMessage => {
+        this.isLoading = false;
+        this.error = errorMessage;
+      }
+    );
 
     // the reason we passed the whole form form the template and not just the value: we can call
     // reset from within this function
