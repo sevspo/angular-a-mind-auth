@@ -18,7 +18,9 @@ export interface AuthResData {
    providedIn: "root"
 })
 export class AuthService {
+   // we also need to update if the user expires
    user = new Subject<User>();
+
    constructor(private http: HttpClient) {}
 
    signUp(email: string, password: string) {
@@ -67,9 +69,12 @@ export class AuthService {
          );
    }
 
+   // here again, since sign in and login share the same hangling of errors and the response, we outsourced the code form the
+   // requests in separate methods.
    private handleUserAuth(email: string, userId: string, token: string, expiresIn: number) {
       const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
       const user = new User(email, userId, token, expirationDate);
+      // we call next on the subject and pass it the newly created user. it has to be an async action because it depends on the request.
       this.user.next(user);
    }
 

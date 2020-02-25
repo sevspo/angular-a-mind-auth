@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { Form, NgForm } from "@angular/forms";
 import { AuthService, AuthResData } from "./auth.service";
 import { Observable } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
    selector: "app-auth",
@@ -13,7 +14,7 @@ export class AuthComponent {
    // another example why null: if you had an empty string, that would be the error!
    error: string = null;
 
-   constructor(private authService: AuthService) {}
+   constructor(private route: Router, private authService: AuthService) {}
 
    onSwitchMode() {
       this.isLoginMode = !this.isLoginMode;
@@ -46,6 +47,8 @@ export class AuthComponent {
          resData => {
             console.log(resData);
             this.isLoading = false;
+            // on succesfull login, or subscription, we navigate away to recipes
+            this.route.navigate(["/recipes"]);
          },
          errorMessage => {
             this.isLoading = false;
