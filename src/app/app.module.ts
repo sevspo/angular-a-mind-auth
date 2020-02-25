@@ -19,32 +19,26 @@ import { RecipeEditComponent } from "./recipes/recipe-edit/recipe-edit.component
 import { RecipeService } from "./recipes/recipe.service";
 import { AuthComponent } from "./auth/auth.component";
 import { AuthService } from "./auth/auth.service";
-import { SpinnerComponent } from './shared/spinner/spinner.component';
+import { SpinnerComponent } from "./shared/spinner/spinner.component";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HeaderComponent,
-    RecipesComponent,
-    RecipeListComponent,
-    RecipeDetailComponent,
-    RecipeItemComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
-    DropdownDirective,
-    RecipeStartComponent,
-    RecipeEditComponent,
-    AuthComponent,
-    SpinnerComponent
-  ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    AppRoutingModule
-  ],
-  providers: [ShoppingListService, RecipeService, AuthService],
-  bootstrap: [AppComponent]
+   declarations: [
+      AppComponent,
+      HeaderComponent,
+      RecipesComponent,
+      RecipeListComponent,
+      RecipeDetailComponent,
+      RecipeItemComponent,
+      ShoppingListComponent,
+      ShoppingEditComponent,
+      DropdownDirective,
+      RecipeStartComponent,
+      RecipeEditComponent,
+      AuthComponent,
+      SpinnerComponent
+   ],
+   imports: [BrowserModule, FormsModule, ReactiveFormsModule, HttpClientModule, AppRoutingModule],
+   providers: [ShoppingListService, RecipeService, AuthService],
+   bootstrap: [AppComponent]
 })
 export class AppModule {}
