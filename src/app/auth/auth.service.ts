@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
 import { catchError, tap } from "rxjs/operators";
-import { throwError, Subject } from "rxjs";
+import { throwError, Subject, BehaviorSubject } from "rxjs";
 import { User } from "./user.model";
 
 export interface AuthResData {
@@ -19,7 +19,8 @@ export interface AuthResData {
 })
 export class AuthService {
    // we also need to update if the user expires
-   user = new Subject<User>();
+   // we change from Subject to BehaviorSubject.
+   user = new BehaviorSubject<User>(null);
 
    constructor(private http: HttpClient) {}
 
