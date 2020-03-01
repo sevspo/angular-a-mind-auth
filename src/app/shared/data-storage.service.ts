@@ -30,13 +30,32 @@ export class DataStorageService {
       // So we use exhaustMap. this takes the value "the user" form the 1 observable into the next.
       // For that we move the previously returned http.get observable into the function bod of the exhaustMap.
       // but only the get request, not the pipe.
-      return this.authService.user.pipe(
-         take(1),
-         exhaustMap(user => {
-            return this.http.get<Recipe[]>("https://ng-http-tut-api.firebaseio.com/recipes.json", {
-               params: new HttpParams().set("auth", user.token)
-            });
-         }),
+
+      // But since we are now providing an interceptor to change all requests, we don't need to manipulate the request her
+      // any more and put the original request back in place.
+
+      // return this.authService.user.pipe(
+      //    take(1),
+      //    exhaustMap(user => {
+      //       return this.http.get<Recipe[]>("https://ng-http-tut-api.firebaseio.com/recipes.json", {
+      //          params: new HttpParams().set("auth", user.token)
+      //       });
+      //    }),
+      //    map(recipes => {
+      //       return recipes.map(recipe => {
+      //          return {
+      //             ...recipe,
+      //             ingredients: recipe.ingredients ? recipe.ingredients : []
+      //          };
+      //       });
+      //    }),
+      //    tap(recipes => {
+      //       this.recipeService.setRecipes(recipes);
+      //    })
+      // );
+
+      /* Old Fetch Function */
+      return this.http.get<Recipe[]>("https://ng-http-tut-api.firebaseio.com/recipes.json").pipe(
          map(recipes => {
             return recipes.map(recipe => {
                return {
@@ -50,25 +69,4 @@ export class DataStorageService {
          })
       );
    }
-
-   /* Old Fetch Function */
-   // fetchRecipes() {
-   //    return this.http
-   //      .get<Recipe[]>(
-   //        'https://ng-http-tut-api.firebaseio.com/recipes.json'
-   //      )
-   //      .pipe(
-   //        map(recipes => {
-   //          return recipes.map(recipe => {
-   //            return {
-   //              ...recipe,
-   //              ingredients: recipe.ingredients ? recipe.ingredients : []
-   //            };
-   //          });
-   //        }),
-   //        tap(recipes => {
-   //          this.recipeService.setRecipes(recipes);
-   //        })
-   //      );
-   //  }
 }
