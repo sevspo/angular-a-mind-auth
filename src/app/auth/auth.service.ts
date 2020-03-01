@@ -74,10 +74,13 @@ export class AuthService {
    // here again, since sign in and login share the same hangling of errors and the response, we outsourced the code form the
    // requests in separate methods.
    private handleUserAuth(email: string, userId: string, token: string, expiresIn: number) {
+      // TODO: look up this section again! why creating two date objects?
       const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
       const user = new User(email, userId, token, expirationDate);
       // we call next on the subject and pass it the newly created user. it has to be an async action because it depends on the request.
       this.user.next(user);
+      // store the user in case we reload the app.
+      localStorage.setItem("userData", JSON.stringify(user));
    }
 
    // shared hadle error function
@@ -103,5 +106,34 @@ export class AuthService {
    logout() {
       this.user.next(null);
       this.router.navigate(["/auth"]);
+   }
+
+   // this method will check if a user was stored in localStorage and was authenticated.
+
+   autoLogin() {
+      const userData: {
+         email: string;
+         userId: string;
+         _token: string;
+         // unlike in the class, we here only get a string, because localstorage holds strings or Json and not methods,
+         // therefore it cannot hold a getter method. so we have string instead of a date object here.
+         _tokenExpriationDate: string;
+      } = JSON.parse(localStorage.getItem("userData"));
+      if (!userData) {
+         return;
+      }
+      // create the new user form the data
+      const loadedUser = new User(
+         userData.email,
+         userData.userId,
+         userData._token,
+         new Date(userData._tokenExpriationDate)
+      );
+
+      // check the token using the getter mehtod of the user class
+      // then on app componen, which is loaded early, call the method from onInit
+      if (loadedUser.token) {
+         this.user.next(loadedUser);
+      }
    }
 }
