@@ -22,6 +22,7 @@ export class AuthService {
    // we also need to update if the user expires
    // we change from Subject to BehaviorSubject.
    user = new BehaviorSubject<User>(null);
+   private autoLogoutTimer: any;
 
    constructor(private http: HttpClient, private router: Router) {}
 
@@ -79,6 +80,8 @@ export class AuthService {
       const user = new User(email, userId, token, expirationDate);
       // we call next on the subject and pass it the newly created user. it has to be an async action because it depends on the request.
       this.user.next(user);
+      // here we also have to call the autologout function and transform the value form secons to miliseconds.
+      this.autoLogout(expiresIn * 1000);
       // store the user in case we reload the app.
       localStorage.setItem("userData", JSON.stringify(user));
    }
@@ -106,6 +109,23 @@ export class AuthService {
    logout() {
       this.user.next(null);
       this.router.navigate(["/auth"]);
+      // clear the user from the local storage
+      localStorage.removeItem("userData");
+      // and clear the timer
+      if (this.autoLogoutTimer) {
+         clearTimeout(this.autoLogoutTimer);
+      }
+      // and set the variable back to null
+      this.autoLogoutTimer = null;
+   }
+
+   // the auto logout function. Neede to reflect the logout that hapens in the backend when the token expires
+   // we also have to make sure to clear the timer if a user presses the logout button. so we store it in a variable.
+   autoLogout(expriationDuration: number) {
+      console.log(expriationDuration);
+      this.autoLogoutTimer = setTimeout(() => {
+         this.logout();
+      }, expriationDuration);
    }
 
    // this method will check if a user was stored in localStorage and was authenticated.
@@ -134,6 +154,11 @@ export class AuthService {
       // then on app componen, which is loaded early, call the method from onInit
       if (loadedUser.token) {
          this.user.next(loadedUser);
+         // And also here we have to call the autologout function
+         // and recalculate the expriation Duration.
+         const expriationDuration =
+            new Date(userData._tokenExpriationDate).getTime() - new Date().getTime();
+         this.autoLogout(expriationDuration);
       }
    }
 }
